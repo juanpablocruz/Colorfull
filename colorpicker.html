@@ -61,6 +61,10 @@
     <script src="color.js"></script>
 
 <script>
+    var colorSupport = false;
+    var i = document.createElement("input");
+    i.setAttribute("type","color");
+    if(i.type !== "text") colorSupport = true;
     var canvas = document.getElementById("picker");
         var context = canvas.getContext("2d");
     function drawWheel(){
@@ -84,7 +88,11 @@
     }
     drawWheel();
     function fillInputs(rgb){
-        $("#color").val(rgb.hex);
+        if(colorSupport)
+            $("#color").val(rgb.hex);
+        else
+            $("#color").html("<div id='color'></div>").css("background",rgb.hex);
+        
         $("#hex input").val(rgb.hex);
         $("#rgb input").each(function(i,a){
             $(this).val(rgb.rgb[Object.keys(rgb.rgb)[i]]);
@@ -105,6 +113,7 @@
     }
 </script>
 <script>
+    
 $(document).on("change","input[type=range]",function(){drawWheel()});    
 $(document).on("change","#colores input",function(){
     var type = $(this).parent().attr("id");
