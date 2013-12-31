@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Color-defragment</title>
+    <style>
+        canvas{cursor:pointer;}
+        ul{list-style:none;padding:0;}
+        ul li{margin-bottom:0.5em;}
+        #color{width:3em;height:2em;margin-top:2em; display:inline-block;vertical-align:bottom;}
+        #colores{width:400px;}
+        #colores label{display:inline-block;margin-right:1em;}
+        #colores input{width:50px;margin-right:0.5em;}
+        #hexadecimal{display:inline-block;}
+        label{display:block;}
+        #inputs{width:300px;margin-top:2em;}
+        .input-item{display:inline-block;}
+        #output{margin-top:3em;width:350px;}
+        body{margin:0; display:flex;flex-flow:row;align-items:center;justify-content:center;background:#f3f3f3;color:#555;font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;}
+        section{width:350px;margin-top:5em;}
+    </style>
+</head>
+<body>
+    <section>
+<canvas id="picker" width="300" height="300"></canvas>
+    <div id="inputs">
+        <div class="input-item">
+            <label>Saturación</label><input type="range" min=0 max=100 id="sat" value="100"/>
+        </div>
+        <div class="input-item">
+            <label>Iluminación</label><input type="range" min=0 max=100 id="lig" value="50"/>
+    
+        </div>
+    </div>
+    
+        <div id="colores">
+            <ul>
+                <li id="hex"><label>Hex</label><input type="text" class="code"/><input type="color" id="color"></li>
+                <li id="rgb"><label>RGB</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
+                <li id="hsl"><label>HSL</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
+                <li id="hsv"><label>HSV</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
+                <li id="lab"><label>LAB</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
+                <li id="cmyk"><label>CMYK</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
+            </ul>
+            
+        </div>
+    <div id="output"></div>
+    </section>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
+    <script src="color.js"></script>
+
+<script>
+    var canvas = document.getElementById("picker");
+        var context = canvas.getContext("2d");
+    function drawWheel(){
+        
+        var x = canvas.width / 2;
+        var y = canvas.height / 2;
+        var radius = canvas.width / 2;
+        var counterClockwise = false;
+        var sat = $("#sat").val();
+        var lig = $("#lig").val();
+        for(var angle=0; angle<=360; angle+=1){
+            var startAngle = (angle-2)*Math.PI/180;
+            var endAngle = angle * Math.PI/180;
+            context.beginPath();
+            context.moveTo(x, y);
+            context.arc(x, y, radius, startAngle, endAngle, counterClockwise);
+            context.closePath();
+            context.fillStyle = 'hsl('+angle+', '+sat+'%, '+lig+'%)';
+            context.fill();
+        } 
+    }
+    drawWheel();
+    function fillInputs(rgb){
+        $("#color").val(rgb.hex);
+        $("#hex input").val(rgb.hex);
+        $("#rgb input").each(function(i,a){
+            $(this).val(rgb.rgb[Object.keys(rgb.rgb)[i]]);
+        });
+        $("#hsl input").each(function(i,a){
+            $(this).val(Math.round(rgb.hsl[Object.keys(rgb.hsl)[i]] * 100) / 100);
+        }); 
+        $("#lab input").each(function(i,a){
+            $(this).val(Math.round(rgb.lab[Object.keys(rgb.lab)[i]] * 100) / 100);
+        });
+        $("#hsv input").each(function(i,a){
+            $(this).val(Math.round(rgb.hsv[Object.keys(rgb.hsv)[i]] * 100) / 100);
+        });
+        $("#cmyk input").each(function(i,a){
+            $(this).val(Math.round(rgb.cmyk[Object.keys(rgb.cmyk)[i]] * 100) / 100);
+        }); 
+       
+    }
+</script>
+<script>
+$(document).on("change","input[type=range]",function(){drawWheel()});    
+$(document).on("change","#colores input",function(){
+    var type = $(this).parent().attr("id");
+    if(type!="hex"){
+        var color = "(";
+        $(this).parent().find("input").each(function(i,a){
+            color += $(this).val()+",";
+        });
+        color.slice(0,-1);
+        color += ")";
+    }
+    else{
+        color = $(this).val();
+    }
+    fillInputs(new Color(color,type));
+    
+});    
+$(document).on("click", "#picker", function(e){
+    $("#output").html("");
+    if(e.offsetX==undefined) // this works for Firefox
+      {
+        x = e.pageX-$(this).offset().left;
+        y = e.pageY-$(this).offset().top;
+      }             
+      else                     // works in Google Chrome
+      {
+        x = e.offsetX;
+        y = e.offsetY;
+      }
+    var sat = $("#sat").val();
+    var lig = $("#lig").val();
+    var angle = Math.atan2(y-canvas.height / 2,x-canvas.width / 2)*(180/Math.PI);
+    var rgb = new Color("("+(angle)+","+sat+","+lig+")","hsl");
+    fillInputs(rgb);
+
+    
+});
+</script>
+
+</body>
+</html>
