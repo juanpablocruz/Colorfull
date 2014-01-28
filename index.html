@@ -23,7 +23,7 @@
         .input-item{display:inline-block;}
         #output{margin-top:3em;width:350px;}
         body{
-            margin:0; 
+            margin:0;
             background:#f3f3f3;
             color:#555;
             font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
@@ -40,10 +40,10 @@
         </div>
         <div class="input-item">
             <label>Iluminación</label><input type="range" min=0 max=100 id="lig" value="50"/>
-    
+
         </div>
     </div>
-    
+
         <div id="colores">
             <ul>
                 <li id="hex"><label>Hex</label><input type="text" class="code"/><input type="color" id="color"></li>
@@ -53,7 +53,7 @@
                 <li id="lab"><label>LAB</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
                 <li id="cmyk"><label>CMYK</label><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/><input type="text" class="code"/></li>
             </ul>
-            
+
         </div>
     <div id="output"></div>
     </section>
@@ -68,7 +68,7 @@
     var canvas = document.getElementById("picker");
         var context = canvas.getContext("2d");
     function drawWheel(){
-        
+
         var x = canvas.width / 2;
         var y = canvas.height / 2;
         var radius = canvas.width / 2;
@@ -84,7 +84,7 @@
             context.closePath();
             context.fillStyle = 'hsl('+angle+', '+sat+'%, '+lig+'%)';
             context.fill();
-        } 
+        }
     }
     drawWheel();
     function fillInputs(rgb){
@@ -92,14 +92,14 @@
             $("#color").val(rgb.hex);
         else
             $("#color").html("<div id='color'></div>").css("background",rgb.hex);
-        
+
         $("#hex input").val(rgb.hex);
         $("#rgb input").each(function(i,a){
             $(this).val(rgb.rgb[Object.keys(rgb.rgb)[i]]);
         });
         $("#hsl input").each(function(i,a){
             $(this).val(Math.round(rgb.hsl[Object.keys(rgb.hsl)[i]] * 100) / 100);
-        }); 
+        });
         $("#lab input").each(function(i,a){
             $(this).val(Math.round(rgb.lab[Object.keys(rgb.lab)[i]] * 100) / 100);
         });
@@ -108,13 +108,13 @@
         });
         $("#cmyk input").each(function(i,a){
             $(this).val(Math.round(rgb.cmyk[Object.keys(rgb.cmyk)[i]] * 100) / 100);
-        }); 
-       
+        });
+
     }
 </script>
 <script>
-    
-$(document).on("change","input[type=range]",function(){drawWheel()});    
+
+$(document).on("change","input[type=range]",function(){drawWheel()});
 $(document).on("change","#colores input",function(){
     var type = $(this).parent().attr("id");
     if(type!="hex"){
@@ -129,15 +129,15 @@ $(document).on("change","#colores input",function(){
         color = $(this).val();
     }
     fillInputs(new Color(color,type));
-    
-});    
+
+});
 $(document).on("click", "#picker", function(e){
     $("#output").html("");
     if(e.offsetX==undefined) // this works for Firefox
       {
         x = e.pageX-$(this).offset().left;
         y = e.pageY-$(this).offset().top;
-      }             
+      }
       else                     // works in Google Chrome
       {
         x = e.offsetX;
@@ -149,7 +149,7 @@ $(document).on("click", "#picker", function(e){
     var rgb = new Color("("+(angle)+","+sat+","+lig+")","hsl");
     fillInputs(rgb);
 
-    
+
 });
 </script>
 
